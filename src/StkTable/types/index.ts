@@ -314,6 +314,13 @@ export type AreaSelectionConfig<T extends Record<string, any> = any> = {
      * @returns 复制到剪贴板的文本
      */
     formatCellForClipboard?: (row: T, col: StkTableColumn<T>, rawValue: any) => string;
+    /**
+     * 是否启用键盘控制选区移动。
+     * 启用后，方向键/Tab/Shift+Tab 可控制选区移动，类似 Excel 行为。
+     * 启用此功能后，原有的键盘滚动行为将失效。
+     * @default false
+     */
+    keyboard?: boolean;
 };
 
 /** 实验性功能配置 */

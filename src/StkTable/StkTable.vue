@@ -870,7 +870,19 @@ const {
     getSelectedArea,
     clearSelectedArea,
     copySelectedArea,
-} = useAreaSelection({ props, emits, tableContainerRef, dataSourceCopy, tableHeaderLast, rowKeyGen, colKeyGen, cellKeyGen });
+} = useAreaSelection({
+    props,
+    emits,
+    tableContainerRef,
+    dataSourceCopy,
+    tableHeaderLast,
+    rowKeyGen,
+    colKeyGen,
+    cellKeyGen,
+    scrollTo,
+    virtualScroll,
+    virtualScrollX,
+});
 
 watch(
     () => props.columns,
