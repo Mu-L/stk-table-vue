@@ -1,25 +1,23 @@
 # Experimental Features
 
-## experimental.scrollY
+This is an experimental feature and may change in future versions.
 
-Transform-based vertical scrolling simulation reduces layout thrashing and can improve scrolling performance in certain scenarios.
+## experimental.scrollY <Badge type="tip" text="^0.10.0" />
+
+Transform-based vertical scrolling simulation.
+
+Due to browser limitations on DOM element height, displaying extremely large datasets may cause issues. Using transform to simulate scrolling resolves this problem.
 
 ### Usage
 
-```vue
+```js
 <template>
   <StkTable
     virtual
     scroll-row-by-row
-    :experimental="{ scrollY: true }"
+    :experimental="{ scrollY: true }" //[!code ++]
     :data-source="dataSource"
     :columns="columns"
   />
 </template>
 ```
-
-### Notes
-
-- This is an experimental feature and may change in future versions
-- When combined with `scrollRowByRow`, the transform offset is disabled to avoid conflicts
-- The feature requires `props.virtual` to be enabled for optimal performance
