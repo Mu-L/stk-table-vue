@@ -260,7 +260,6 @@ import {
     UniqKeyProp,
 } from './types/index';
 import { useAutoResize } from './useAutoResize';
-import { useAreaSelection } from './useAreaSelection';
 import { useColResize } from './useColResize';
 import { useFixedCol } from './useFixedCol';
 import { useFixedStyle } from './useFixedStyle';
@@ -280,6 +279,7 @@ import { useVirtualScroll } from './useVirtualScroll';
 import { useWheeling } from './useWheeling';
 import { createStkTableId, getCalculatedColWidth } from './utils/constRefUtils';
 import { getClosestColKey, getClosestTr, getClosestTrIndex, isEmptyValue, rafThrottle, tableSort, transformWidthToStr } from './utils/index';
+import { ON_DEMAND_FEATURE } from './features/index';
 
 /** Generic stands for DataType */
 type DT = any & PrivateRowDT;
@@ -870,13 +870,12 @@ const {
     getSelectedArea,
     clearSelectedArea,
     copySelectedArea,
-} = useAreaSelection({
+} = ON_DEMAND_FEATURE.useAreaSelection({
     props,
     emits,
     tableContainerRef,
     dataSourceCopy,
     tableHeaderLast,
-    rowKeyGen,
     colKeyGen,
     cellKeyGen,
     scrollTo,

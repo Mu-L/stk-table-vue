@@ -1,8 +1,8 @@
 import { Ref, ShallowRef, computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { AreaSelectionRange, CellKeyGen, ColKeyGen, RowKeyGen, StkTableColumn, UniqKey } from './types';
-import { VirtualScrollStore, VirtualScrollXStore } from './useVirtualScroll';
-import { getClosestColKey, getClosestTrIndex } from './utils';
-import { getCalculatedColWidth } from './utils/constRefUtils';
+import { AreaSelectionRange, CellKeyGen, ColKeyGen, StkTableColumn, UniqKey } from '../types';
+import { VirtualScrollStore, VirtualScrollXStore } from '../useVirtualScroll';
+import { getClosestColKey, getClosestTrIndex } from '../utils';
+import { getCalculatedColWidth } from '../utils/constRefUtils';
 
 type Params<DT extends Record<string, any>> = {
     props: any;
@@ -10,36 +10,12 @@ type Params<DT extends Record<string, any>> = {
     tableContainerRef: Ref<HTMLDivElement | undefined>;
     dataSourceCopy: ShallowRef<DT[]>;
     tableHeaderLast: ShallowRef<StkTableColumn<DT>[]>;
-    rowKeyGen: RowKeyGen;
     colKeyGen: ColKeyGen;
     cellKeyGen: CellKeyGen;
     scrollTo: (top: number | null, left: number | null) => void;
     virtualScroll: Ref<VirtualScrollStore>;
     virtualScrollX: Ref<VirtualScrollXStore>;
 };
-
-/** 获取归一化（min/max）后的选区范围 */
-function normalizeRange(range: AreaSelectionRange) {
-    return {
-        minRow: Math.min(range.startRowIndex, range.endRowIndex),
-        maxRow: Math.max(range.startRowIndex, range.endRowIndex),
-        minCol: Math.min(range.startColIndex, range.endColIndex),
-        maxCol: Math.max(range.startColIndex, range.endColIndex),
-    };
-}
-
-/**
- * 自动滚动：鼠标距容器边缘多少px开始触发
- * en: Mouse distance from container edge to start auto scroll
- */
-const EDGE_ZONE = 40;
-/**
- * 自动滚动：每帧最大滚动像素
- * en: Maximum scroll pixels per frame
- */
-const SCROLL_SPEED_MAX = 15;
-
-const POINT_EDGE_OFFSET = 2;
 
 /**
  * 单元格拖拽选区
@@ -50,13 +26,25 @@ export function useAreaSelection<DT extends Record<string, any>>({
     tableContainerRef,
     dataSourceCopy,
     tableHeaderLast,
-    // rowKeyGen,
     colKeyGen,
     cellKeyGen,
     scrollTo,
     virtualScroll,
     virtualScrollX,
 }: Params<DT>) {
+    /**
+     * 自动滚动：鼠标距容器边缘多少px开始触发
+     * en: Mouse distance from container edge to start auto scroll
+     */
+    const EDGE_ZONE = 40;
+    /**
+     * 自动滚动：每帧最大滚动像素
+     * en: Maximum scroll pixels per frame
+     */
+    const SCROLL_SPEED_MAX = 15;
+
+    const POINT_EDGE_OFFSET = 2;
+
     /** 当前选区范围 */
     const selectionRange = ref<AreaSelectionRange | null>(null) as Ref<AreaSelectionRange | null>;
     /** 是否正在拖选 */
@@ -133,6 +121,17 @@ export function useAreaSelection<DT extends Record<string, any>>({
         document.removeEventListener('mousemove', onDocumentMouseMove);
         document.removeEventListener('mouseup', onDocumentMouseUp);
         stopAutoScroll();
+    }
+
+    /** 获取归一化（min/max）后的选区范围 */
+    function normalizeRange(range: AreaSelectionRange) {
+        const { startRowIndex, endRowIndex, startColIndex, endColIndex } = range;
+        return {
+            minRow: Math.min(startRowIndex, endRowIndex),
+            maxRow: Math.max(startRowIndex, endRowIndex),
+            minCol: Math.min(startColIndex, endColIndex),
+            maxCol: Math.max(startColIndex, endColIndex),
+        };
     }
 
     /** 根据colKey获取列的绝对索引 */
@@ -650,11 +649,7 @@ export function useAreaSelection<DT extends Record<string, any>>({
     }
 
     return {
-        selectionRange,
         isSelecting,
-        selectedCellKeys,
-        normalizedRange,
-        keyboardEnabled,
         onSelectionMouseDown,
         getAreaSelectionClasses,
         getSelectedArea,
