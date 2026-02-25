@@ -1,4 +1,4 @@
-import { AutoRowHeightConfig, AreaSelectionConfig, AreaSelectionRange, ColResizableConfig, DragRowConfig, ExpandConfig, ExperimentalConfig, HeaderDragConfig, HighlightConfig, Order, PrivateRowDT, PrivateStkTableColumn, RowActiveOption, SeqConfig, SortConfig, SortOption, StkTableColumn, TreeConfig, UniqKey, UniqKeyProp } from './types/index';
+import { AreaSelectionConfig, AreaSelectionRange, AutoRowHeightConfig, ColResizableConfig, DragRowConfig, ExpandConfig, ExperimentalConfig, HeaderDragConfig, HighlightConfig, Order, PrivateRowDT, PrivateStkTableColumn, RowActiveOption, SeqConfig, SortConfig, SortOption, StkTableColumn, TreeConfig, UniqKey, UniqKeyProp } from './types/index';
 import { ScrollbarOptions } from './useScrollbar';
 
 /** Generic stands for DataType */
@@ -410,12 +410,12 @@ declare const __VLS_component: import('vue').DefineComponent<import('vue').Extra
      * @see {@link getSelectedArea}
      */
     getSelectedArea: () => {
-        rows: PrivateRowDT[];
-        cols: StkTableColumn<PrivateRowDT>[];
+        rows: any[];
+        cols: StkTableColumn<any>[];
         range: null;
     } | {
-        rows: PrivateRowDT[];
-        cols: StkTableColumn<PrivateRowDT>[];
+        rows: any[];
+        cols: StkTableColumn<any>[];
         range: {
             startRowIndex: number;
             startColIndex: number;
