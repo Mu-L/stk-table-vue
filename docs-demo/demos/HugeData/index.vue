@@ -286,7 +286,10 @@ function handleColSpan(v: boolean) {
         stripe
         col-resizable
         sort-remote
-        :area-selection="areaSelection"
+        :area-selection="{
+            enabled: areaSelection,
+            keyboard: true,
+        }"
         :scrollbar="scrollbar"
         :experimental="{ scrollY: experimentalScrollY }"
         :scroll-row-by-row="rowByRow || optimizeDragScroll"

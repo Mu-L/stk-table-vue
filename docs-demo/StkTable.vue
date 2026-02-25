@@ -3,10 +3,12 @@
  * support vitepress env
  */
 import { useData } from 'vitepress';
-import { StkTable as StkTableBase } from '../src/StkTable';
+import { StkTable as StkTableBase, registerFeature, useAreaSelection } from '../src/StkTable';
 import { useTemplateRef } from 'vue';
 const { isDark } = useData();
 const baseStkTableRef = useTemplateRef('stkTableRef');
+
+registerFeature(useAreaSelection);
 
 type BaseStkTableType = InstanceType<typeof StkTableBase>;
 

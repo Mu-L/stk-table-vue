@@ -1,5 +1,6 @@
 import { Ref, ShallowRef } from 'vue';
 import { AreaSelectionRange, CellKeyGen, ColKeyGen, RowKeyGen, StkTableColumn, UniqKey } from './types';
+import { VirtualScrollStore, VirtualScrollXStore } from './useVirtualScroll';
 
 type Params<DT extends Record<string, any>> = {
     props: any;
@@ -10,11 +11,14 @@ type Params<DT extends Record<string, any>> = {
     rowKeyGen: RowKeyGen;
     colKeyGen: ColKeyGen;
     cellKeyGen: CellKeyGen;
+    scrollTo: (top: number | null, left: number | null) => void;
+    virtualScroll: Ref<VirtualScrollStore>;
+    virtualScrollX: Ref<VirtualScrollXStore>;
 };
 /**
  * 单元格拖拽选区
  */
-export declare function useAreaSelection<DT extends Record<string, any>>({ props, emits, tableContainerRef, dataSourceCopy, tableHeaderLast, colKeyGen, cellKeyGen, }: Params<DT>): {
+export declare function useAreaSelection<DT extends Record<string, any>>({ props, emits, tableContainerRef, dataSourceCopy, tableHeaderLast, colKeyGen, cellKeyGen, scrollTo, virtualScroll, virtualScrollX, }: Params<DT>): {
     selectionRange: Ref<AreaSelectionRange | null, AreaSelectionRange | null>;
     isSelecting: Ref<boolean, boolean>;
     selectedCellKeys: import('vue').ComputedRef<Set<string>>;
@@ -24,6 +28,7 @@ export declare function useAreaSelection<DT extends Record<string, any>>({ props
         minCol: number;
         maxCol: number;
     } | null>;
+    keyboardEnabled: import('vue').ComputedRef<any>;
     onSelectionMouseDown: (e: MouseEvent) => void;
     getAreaSelectionClasses: (cellKey: string, absoluteRowIndex: number, colKey: UniqKey) => string[];
     getSelectedArea: () => {

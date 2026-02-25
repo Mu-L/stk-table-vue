@@ -1,12 +1,13 @@
 <template>
     <div style="padding: 16px">
+        <CheckItem v-model="keyboard" :text="t('keyboardSelect') + `(v0.11.0)`"></CheckItem>
         <StkTable
             style="height: 400px"
             row-key="id"
             :row-active="false"
             :data-source="rows"
             :columns="cols"
-            :area-selection="{ formatCellForClipboard: formatCell }"
+            :area-selection="{ formatCellForClipboard: formatCell, keyboard }"
             @area-selection-change="onSelectionChange"
         />
         <div style="margin-top: 12px">
@@ -18,8 +19,14 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import StkTable from '../../StkTable.vue';
+import { useI18n } from '../../hooks/useI18n/index';
+import CheckItem from '../../components/CheckItem.vue';
+
+const { t } = useI18n();
 
 type Row = { id: number; name: string; age: number; city: string };
+
+const keyboard = ref(true);
 
 const cols = [
     { title: 'ID', dataIndex: 'id', fixed: 'left', width: 50 },

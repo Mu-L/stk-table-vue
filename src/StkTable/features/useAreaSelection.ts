@@ -1,54 +1,38 @@
 import { Ref, ShallowRef, computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { AreaSelectionRange, CellKeyGen, ColKeyGen, RowKeyGen, StkTableColumn, UniqKey } from './types';
-import { getClosestColKey, getClosestTrIndex } from './utils';
-
-type Params<DT extends Record<string, any>> = {
-    props: any;
-    emits: any;
-    tableContainerRef: Ref<HTMLDivElement | undefined>;
-    dataSourceCopy: ShallowRef<DT[]>;
-    tableHeaderLast: ShallowRef<StkTableColumn<DT>[]>;
-    rowKeyGen: RowKeyGen;
-    colKeyGen: ColKeyGen;
-    cellKeyGen: CellKeyGen;
-};
-
-/** 获取归一化（min/max）后的选区范围 */
-function normalizeRange(range: AreaSelectionRange) {
-    return {
-        minRow: Math.min(range.startRowIndex, range.endRowIndex),
-        maxRow: Math.max(range.startRowIndex, range.endRowIndex),
-        minCol: Math.min(range.startColIndex, range.endColIndex),
-        maxCol: Math.max(range.startColIndex, range.endColIndex),
-    };
-}
-
-/**
- * 自动滚动：鼠标距容器边缘多少px开始触发
- * en: Mouse distance from container edge to start auto scroll
- */
-const EDGE_ZONE = 40;
-/**
- * 自动滚动：每帧最大滚动像素
- * en: Maximum scroll pixels per frame
- */
-const SCROLL_SPEED_MAX = 15;
-
-const POINT_EDGE_OFFSET = 2;
+import { AreaSelectionRange, CellKeyGen, ColKeyGen, StkTableColumn, UniqKey } from '../types';
+import { VirtualScrollStore, VirtualScrollXStore } from '../useVirtualScroll';
+import { getClosestColKey, getClosestTrIndex } from '../utils';
+import { getCalculatedColWidth } from '../utils/constRefUtils';
 
 /**
  * 单元格拖拽选区
+ * en: Cell drag selection
  */
-export function useAreaSelection<DT extends Record<string, any>>({
-    props,
-    emits,
-    tableContainerRef,
-    dataSourceCopy,
-    tableHeaderLast,
-    // rowKeyGen,
-    colKeyGen,
-    cellKeyGen,
-}: Params<DT>) {
+export function useAreaSelection<DT extends Record<string, any>>(
+    props: any,
+    emits: any,
+    tableContainerRef: Ref<HTMLDivElement | undefined>,
+    dataSourceCopy: ShallowRef<DT[]>,
+    tableHeaderLast: ShallowRef<StkTableColumn<DT>[]>,
+    colKeyGen: ColKeyGen,
+    cellKeyGen: CellKeyGen,
+    scrollTo: (top: number | null, left: number | null) => void,
+    virtualScroll: Ref<VirtualScrollStore>,
+    virtualScrollX: Ref<VirtualScrollXStore>,
+) {
+    /**
+     * 自动滚动：鼠标距容器边缘多少px开始触发
+     * en: Mouse distance from container edge to start auto scroll
+     */
+    const EDGE_ZONE = 40;
+    /**
+     * 自动滚动：每帧最大滚动像素
+     * en: Maximum scroll pixels per frame
+     */
+    const SCROLL_SPEED_MAX = 15;
+
+    const POINT_EDGE_OFFSET = 2;
+
     /** 当前选区范围 */
     const selectionRange = ref<AreaSelectionRange | null>(null) as Ref<AreaSelectionRange | null>;
     /** 是否正在拖选 */
@@ -125,6 +109,17 @@ export function useAreaSelection<DT extends Record<string, any>>({
         document.removeEventListener('mousemove', onDocumentMouseMove);
         document.removeEventListener('mouseup', onDocumentMouseUp);
         stopAutoScroll();
+    }
+
+    /** 获取归一化（min/max）后的选区范围 */
+    function normalizeRange(range: AreaSelectionRange) {
+        const { startRowIndex, endRowIndex, startColIndex, endColIndex } = range;
+        return {
+            minRow: Math.min(startRowIndex, endRowIndex),
+            maxRow: Math.max(startRowIndex, endRowIndex),
+            minCol: Math.min(startColIndex, endColIndex),
+            maxCol: Math.max(startColIndex, endColIndex),
+        };
     }
 
     /** 根据colKey获取列的绝对索引 */
@@ -350,6 +345,12 @@ export function useAreaSelection<DT extends Record<string, any>>({
         return cfg && typeof cfg === 'object' && typeof cfg.formatCellForClipboard === 'function' ? cfg.formatCellForClipboard : null;
     }
 
+    /** 是否启用键盘控制选区移动 */
+    const keyboardEnabled = computed(() => {
+        const cfg = props.areaSelection;
+        return cfg && typeof cfg === 'object' && cfg.keyboard === true;
+    });
+
     /**
      * 复制选区内容到剪贴板
      * @returns 复制的文本内容
@@ -392,23 +393,204 @@ export function useAreaSelection<DT extends Record<string, any>>({
     /**
      * Ctrl+C / Cmd+C 复制选区内容
      * Esc 取消选区
+     * Arrow keys / Tab 移动选区（keyboard=true时）
      **/
     function onKeydown(e: KeyboardEvent) {
-        if (!props.areaSelection || !selectionRange.value) return;
+        if (!props.areaSelection) return;
+
+        const key = e.key;
 
         // Esc 键：取消当前选区
-        if (e.key === 'Escape' || e.key === 'Esc') {
-            clearSelectedArea();
-            emitSelectionChange();
-            e.preventDefault();
+        if (key === 'Escape' || key === 'Esc') {
+            if (selectionRange.value) {
+                clearSelectedArea();
+                emitSelectionChange();
+                e.preventDefault();
+            }
             return;
         }
 
         // Ctrl/Cmd+C 复制选区
-        if (!((e.ctrlKey || e.metaKey) && e.key === 'c')) return;
+        if ((e.ctrlKey || e.metaKey) && key === 'c' && selectionRange.value) {
+            copySelectedArea();
+            e.preventDefault();
+            return;
+        }
 
-        copySelectedArea();
+        // 键盘导航（需要启用 keyboard 选项）
+        if (!keyboardEnabled.value) return;
+
+        const isArrowKey = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key);
+        const isTabKey = key === 'Tab';
+        const isNavigationKey = isArrowKey || isTabKey;
+
+        if (!isNavigationKey) return;
+
         e.preventDefault();
+
+        const rowCount = dataSourceCopy.value.length;
+        const colCount = tableHeaderLast.value.length;
+        if (rowCount === 0 || colCount === 0) return;
+
+        // 如果没有选区，默认从第一个单元格开始
+        if (!selectionRange.value) {
+            anchorCell = { rowIndex: 0, colIndex: 0 };
+            selectionRange.value = {
+                startRowIndex: 0,
+                startColIndex: 0,
+                endRowIndex: 0,
+                endColIndex: 0,
+            };
+            emitSelectionChange();
+            scrollToCell(0, 0);
+            return;
+        }
+
+        // 计算移动方向
+        let rowDelta = 0;
+        let colDelta = 0;
+
+        if (key === 'ArrowUp') {
+            rowDelta = -1;
+        } else if (key === 'ArrowDown') {
+            rowDelta = 1;
+        } else if (key === 'ArrowLeft') {
+            colDelta = -1;
+        } else if (key === 'ArrowRight') {
+            colDelta = 1;
+        } else if (key === 'Tab') {
+            // Tab: 向右移动；Shift+Tab: 向左移动
+            colDelta = e.shiftKey ? -1 : 1;
+        }
+
+        // Shift 扩展选区，否则移动单格选区
+        if (e.shiftKey && isArrowKey) {
+            // 扩展选区：更新 endRow/endCol
+            const range = selectionRange.value;
+            let newEndRow = range.endRowIndex + rowDelta;
+            let newEndCol = range.endColIndex + colDelta;
+
+            // 边界检查
+            newEndRow = Math.max(0, Math.min(newEndRow, rowCount - 1));
+            newEndCol = Math.max(0, Math.min(newEndCol, colCount - 1));
+
+            selectionRange.value = {
+                ...range,
+                endRowIndex: newEndRow,
+                endColIndex: newEndCol,
+            };
+
+            scrollToCell(newEndRow, newEndCol);
+        } else {
+            // 移动单格选区
+            // 取当前 end 位置作为基础（这样多次移动时，方向一致）
+            const range = selectionRange.value;
+            const { minRow, minCol } = normalizeRange(range);
+            let newRow = minRow + rowDelta;
+            let newCol = minCol + colDelta;
+
+            // 边界检查（先检查，避免越界）
+            newRow = Math.max(0, Math.min(newRow, rowCount - 1));
+            newCol = Math.max(0, Math.min(newCol, colCount - 1));
+
+            // Tab 换行逻辑：如果到达行尾/行首，换行
+            if (isTabKey) {
+                // 计算原始未 clamp 的值
+                const rawCol = minCol + colDelta;
+                if (rawCol >= colCount) {
+                    newCol = 0;
+                    newRow = Math.min(minRow + 1, rowCount - 1);
+                } else if (rawCol < 0) {
+                    newCol = colCount - 1;
+                    newRow = Math.max(minRow - 1, 0);
+                }
+            }
+
+            // 更新锚点和选区
+            anchorCell = { rowIndex: newRow, colIndex: newCol };
+            selectionRange.value = {
+                startRowIndex: newRow,
+                startColIndex: newCol,
+                endRowIndex: newRow,
+                endColIndex: newCol,
+            };
+
+            scrollToCell(newRow, newCol);
+        }
+
+        emitSelectionChange();
+    }
+
+    /**
+     * 滚动到指定单元格，确保其在可视区域内
+     */
+    function scrollToCell(rowIndex: number, colIndex: number) {
+        const container = tableContainerRef.value;
+        if (!container) return;
+
+        const row = dataSourceCopy.value[rowIndex];
+        const col = tableHeaderLast.value[colIndex];
+        if (!row || !col) return;
+
+        // 获取表头高度
+        const thead = container.querySelector('thead');
+        const headerHeight = thead ? thead.offsetHeight : 0;
+
+        const vs = virtualScroll.value;
+        const vsx = virtualScrollX.value;
+
+        // 计算目标行的位置（基于虚拟滚动数据）
+        const rowHeight = vs.rowHeight;
+        const targetRowTop = rowIndex * rowHeight;
+        const targetRowBottom = targetRowTop + rowHeight;
+
+        // 计算可视区域
+        const visibleTop = container.scrollTop;
+        const visibleBottom = visibleTop + vs.containerHeight - headerHeight;
+
+        // 计算需要的垂直滚动位置
+        let newScrollTop: number | null = null;
+        if (targetRowTop < visibleTop) {
+            // 目标行在可视区域上方，滚动到使目标行位于顶部
+            newScrollTop = targetRowTop;
+        } else if (targetRowBottom > visibleBottom) {
+            // 目标行在可视区域下方，滚动到使目标行位于底部
+            newScrollTop = targetRowBottom - (vs.containerHeight - headerHeight);
+        }
+
+        // 计算目标列的位置
+        let targetColLeft = 0;
+        let targetColWidth = 0;
+        const cols = tableHeaderLast.value;
+        for (let i = 0; i < cols.length; i++) {
+            const colWidth = getCalculatedColWidth(cols[i]) || 100; // 默认100px
+            if (i < colIndex) {
+                targetColLeft += colWidth;
+            } else if (i === colIndex) {
+                targetColWidth = colWidth;
+                break;
+            }
+        }
+        const targetColRight = targetColLeft + targetColWidth;
+
+        // 计算可视区域（水平）
+        const visibleLeft = container.scrollLeft;
+        const visibleRight = visibleLeft + vsx.containerWidth;
+
+        // 计算需要的水平滚动位置
+        let newScrollLeft: number | null = null;
+        if (targetColLeft < visibleLeft) {
+            // 目标列在可视区域左侧
+            newScrollLeft = targetColLeft;
+        } else if (targetColRight > visibleRight) {
+            // 目标列在可视区域右侧
+            newScrollLeft = targetColRight - vsx.containerWidth;
+        }
+
+        // 执行滚动
+        if (newScrollTop !== null || newScrollLeft !== null) {
+            scrollTo(newScrollTop, newScrollLeft);
+        }
     }
 
     /**
@@ -455,14 +637,11 @@ export function useAreaSelection<DT extends Record<string, any>>({
     }
 
     return {
-        selectionRange,
         isSelecting,
-        selectedCellKeys,
-        normalizedRange,
-        onSelectionMouseDown,
-        getAreaSelectionClasses,
-        getSelectedArea,
-        clearSelectedArea,
-        copySelectedArea,
+        getClass: getAreaSelectionClasses,
+        get: getSelectedArea,
+        clear: clearSelectedArea,
+        copy: copySelectedArea,
+        onMD: onSelectionMouseDown,
     };
 }

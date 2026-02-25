@@ -25,7 +25,7 @@
             'auto-row-height': props.autoRowHeight,
             'scroll-row-by-row': isSRBRActive,
             'scrollbar-on': scrollbarOptions.enabled,
-            'is-cell-selecting': isCellSelecting,
+            'is-area-selecting': isAreaSelecting,
             'exp-scroll-y': experimental?.scrollY,
         }"
         :tabindex="props.areaSelection ? 0 : void 0"
@@ -236,10 +236,11 @@ import {
     DEFAULT_SORT_CONFIG,
     IS_LEGACY_MODE,
 } from './const';
+import { ON_DEMAND_FEATURE } from './registerFeature';
 import {
-    AutoRowHeightConfig,
     AreaSelectionConfig,
     AreaSelectionRange,
+    AutoRowHeightConfig,
     ColResizableConfig,
     DragRowConfig,
     ExpandConfig,
@@ -260,7 +261,6 @@ import {
     UniqKeyProp,
 } from './types/index';
 import { useAutoResize } from './useAutoResize';
-import { useAreaSelection } from './useAreaSelection';
 import { useColResize } from './useColResize';
 import { useFixedCol } from './useFixedCol';
 import { useFixedStyle } from './useFixedStyle';
@@ -864,13 +864,24 @@ const { toggleExpandRow, setRowExpand } = useRowExpand({ dataSourceCopy, rowKeyG
 const { toggleTreeNode, setTreeExpand, flatTreeData } = useTree({ props, dataSourceCopy, rowKeyGen, emits });
 
 const {
-    isSelecting: isCellSelecting,
-    onSelectionMouseDown,
-    getAreaSelectionClasses,
-    getSelectedArea,
-    clearSelectedArea,
-    copySelectedArea,
-} = useAreaSelection({ props, emits, tableContainerRef, dataSourceCopy, tableHeaderLast, rowKeyGen, colKeyGen, cellKeyGen });
+    isSelecting: isAreaSelecting,
+    onMD: onSelectionMouseDown,
+    getClass: getAreaSelectionClasses,
+    get: getSelectedArea,
+    clear: clearSelectedArea,
+    copy: copySelectedArea,
+} = ON_DEMAND_FEATURE.useAreaSelection(
+    props,
+    emits,
+    tableContainerRef,
+    dataSourceCopy,
+    tableHeaderLast,
+    colKeyGen,
+    cellKeyGen,
+    scrollTo,
+    virtualScroll,
+    virtualScrollX,
+);
 
 watch(
     () => props.columns,
