@@ -236,7 +236,7 @@ import {
     DEFAULT_SORT_CONFIG,
     IS_LEGACY_MODE,
 } from './const';
-import { ON_DEMAND_FEATURE } from './registerFeatures';
+import { ON_DEMAND_FEATURE } from './registerFeature';
 import {
     AreaSelectionConfig,
     AreaSelectionRange,

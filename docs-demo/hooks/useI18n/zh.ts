@@ -136,4 +136,5 @@ export const zh = {
     Department: '部门',
     Position: '职位',
     Salary: '薪资',
+    keyboardSelect: '键盘选择',
 };

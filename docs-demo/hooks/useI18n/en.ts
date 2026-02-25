@@ -124,4 +124,5 @@ export const en = {
     cnBondOfrBp: 'CnBond-Ofr(BP)',
     bidCsiBp: 'Bid-CSI(BP)',
     csiOfrBp: 'CSI-Ofr(BP)',
+    keyboardSelect: 'Keyboard Select',
 };

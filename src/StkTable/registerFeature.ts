@@ -19,6 +19,11 @@ export const ON_DEMAND_FEATURE: OnDemandFeature = {
     }) as typeof useAreaSelection<any>,
 };
 
-export const registerFeature = (feature: OnDemandFeature[keyof OnDemandFeature]) => {
-    (ON_DEMAND_FEATURE as any)[feature.name] = feature as any;
+type Feature = OnDemandFeature[keyof OnDemandFeature];
+
+export const registerFeature = (feature: Feature | Feature[]) => {
+    const features = Array.isArray(feature) ? feature : [feature];
+    features.forEach(f => {
+        (ON_DEMAND_FEATURE as any)[f.name] = f as any;
+    });
 };

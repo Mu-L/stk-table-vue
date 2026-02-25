@@ -1,9 +1,20 @@
-# 拖拽选区 <Badge type="tip" text="^0.10.0" /> 
-
+# 区域选取 <Badge type="tip" text="^0.10.0" /> <Badge type="warning" text="Need Register" /> 
 通过 `props.areaSelection` 启用表格的单元格拖拽选区。
-
 - 支持复制到剪贴板（Ctrl/Cmd + C）。
 - Esc 取消选区
+- 支持键盘选择（方向键, Shift, Tab）。
+
+::: tip 需要注册 
+该功能需要注册后才能使用。
+:::
+注册方式：
+```ts
+import { registerFeature, useAreaSelection } from 'stk-table-vue';
+// 注册区域选取功能
+registerFeature(useAreaSelection);
+```
+
+
 
 ```js
 <StkTable
