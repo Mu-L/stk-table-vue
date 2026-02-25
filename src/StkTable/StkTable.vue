@@ -25,7 +25,7 @@
             'auto-row-height': props.autoRowHeight,
             'scroll-row-by-row': isSRBRActive,
             'scrollbar-on': scrollbarOptions.enabled,
-            'is-cell-selecting': isCellSelecting,
+            'is-area-selecting': isAreaSelecting,
             'exp-scroll-y': experimental?.scrollY,
         }"
         :tabindex="props.areaSelection ? 0 : void 0"
@@ -864,7 +864,7 @@ const { toggleExpandRow, setRowExpand } = useRowExpand({ dataSourceCopy, rowKeyG
 const { toggleTreeNode, setTreeExpand, flatTreeData } = useTree({ props, dataSourceCopy, rowKeyGen, emits });
 
 const {
-    isSelecting: isCellSelecting,
+    isSelecting: isAreaSelecting,
     onMD: onSelectionMouseDown,
     getClass: getAreaSelectionClasses,
     get: getSelectedArea,
