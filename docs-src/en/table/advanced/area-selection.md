@@ -25,9 +25,9 @@ registerFeature(useAreaSelection);
 <demo vue="advanced/area-selection/AreaSelection.vue" github="https://github.com/ja-plus/stk-table-vue/tree/master/docs-demo/advanced/area-selection/AreaSelection.vue"></demo>
 
 ## Emit
-- [area-selection-change Triggered when area changes](/en/api/emits.html#area-selection-change) 
+- [area-selection-change Triggered when area changes](/en/main/api/emits.html#area-selection-change) 
 
 ## Exposed
-- [getSelectedArea](/en/api/expose.md#getselectedarea)
-- [clearSelectedArea](/en/api/expose.md#clearselectedarea)
-- [copySelectedArea](/en/api/expose.md#copyselectedarea)
+- [getSelectedArea](/en/main/api/expose.md#getselectedarea)
+- [clearSelectedArea](/en/main/api/expose.md#clearselectedarea)
+- [copySelectedArea](/en/main/api/expose.md#copyselectedarea)
