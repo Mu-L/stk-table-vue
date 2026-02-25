@@ -236,10 +236,11 @@ import {
     DEFAULT_SORT_CONFIG,
     IS_LEGACY_MODE,
 } from './const';
+import { ON_DEMAND_FEATURE } from './registerFeatures';
 import {
-    AutoRowHeightConfig,
     AreaSelectionConfig,
     AreaSelectionRange,
+    AutoRowHeightConfig,
     ColResizableConfig,
     DragRowConfig,
     ExpandConfig,
@@ -279,7 +280,6 @@ import { useVirtualScroll } from './useVirtualScroll';
 import { useWheeling } from './useWheeling';
 import { createStkTableId, getCalculatedColWidth } from './utils/constRefUtils';
 import { getClosestColKey, getClosestTr, getClosestTrIndex, isEmptyValue, rafThrottle, tableSort, transformWidthToStr } from './utils/index';
-import { ON_DEMAND_FEATURE } from './features/index';
 
 /** Generic stands for DataType */
 type DT = any & PrivateRowDT;
@@ -865,12 +865,12 @@ const { toggleTreeNode, setTreeExpand, flatTreeData } = useTree({ props, dataSou
 
 const {
     isSelecting: isCellSelecting,
-    onSelectionMouseDown,
-    getAreaSelectionClasses,
-    getSelectedArea,
-    clearSelectedArea,
-    copySelectedArea,
-} = ON_DEMAND_FEATURE.useAreaSelection({
+    onMD: onSelectionMouseDown,
+    getClass: getAreaSelectionClasses,
+    get: getSelectedArea,
+    clear: clearSelectedArea,
+    copy: copySelectedArea,
+} = ON_DEMAND_FEATURE.useAreaSelection(
     props,
     emits,
     tableContainerRef,
@@ -881,7 +881,7 @@ const {
     scrollTo,
     virtualScroll,
     virtualScrollX,
-});
+);
 
 watch(
     () => props.columns,

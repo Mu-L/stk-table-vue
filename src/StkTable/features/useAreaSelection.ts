@@ -4,34 +4,22 @@ import { VirtualScrollStore, VirtualScrollXStore } from '../useVirtualScroll';
 import { getClosestColKey, getClosestTrIndex } from '../utils';
 import { getCalculatedColWidth } from '../utils/constRefUtils';
 
-type Params<DT extends Record<string, any>> = {
-    props: any;
-    emits: any;
-    tableContainerRef: Ref<HTMLDivElement | undefined>;
-    dataSourceCopy: ShallowRef<DT[]>;
-    tableHeaderLast: ShallowRef<StkTableColumn<DT>[]>;
-    colKeyGen: ColKeyGen;
-    cellKeyGen: CellKeyGen;
-    scrollTo: (top: number | null, left: number | null) => void;
-    virtualScroll: Ref<VirtualScrollStore>;
-    virtualScrollX: Ref<VirtualScrollXStore>;
-};
-
 /**
  * 单元格拖拽选区
+ * en: Cell drag selection
  */
-export function useAreaSelection<DT extends Record<string, any>>({
-    props,
-    emits,
-    tableContainerRef,
-    dataSourceCopy,
-    tableHeaderLast,
-    colKeyGen,
-    cellKeyGen,
-    scrollTo,
-    virtualScroll,
-    virtualScrollX,
-}: Params<DT>) {
+export function useAreaSelection<DT extends Record<string, any>>(
+    props: any,
+    emits: any,
+    tableContainerRef: Ref<HTMLDivElement | undefined>,
+    dataSourceCopy: ShallowRef<DT[]>,
+    tableHeaderLast: ShallowRef<StkTableColumn<DT>[]>,
+    colKeyGen: ColKeyGen,
+    cellKeyGen: CellKeyGen,
+    scrollTo: (top: number | null, left: number | null) => void,
+    virtualScroll: Ref<VirtualScrollStore>,
+    virtualScrollX: Ref<VirtualScrollXStore>,
+) {
     /**
      * 自动滚动：鼠标距容器边缘多少px开始触发
      * en: Mouse distance from container edge to start auto scroll
@@ -650,10 +638,10 @@ export function useAreaSelection<DT extends Record<string, any>>({
 
     return {
         isSelecting,
-        onSelectionMouseDown,
-        getAreaSelectionClasses,
-        getSelectedArea,
-        clearSelectedArea,
-        copySelectedArea,
+        getClass: getAreaSelectionClasses,
+        get: getSelectedArea,
+        clear: clearSelectedArea,
+        copy: copySelectedArea,
+        onMD: onSelectionMouseDown,
     };
 }
