@@ -24,13 +24,13 @@
 ## 弹性行高
 首先 `<StkTable>` 这个组件的高度必须是足够的。您可以使其处在`flex`、`grid`等弹性布局中，或将高度设为`100%`，这样做的目的是让其父元素决定它的高度，而不是子元素撑开。
 
-其次, 令`.stk-table .stk-table-main` 的 `height` 为 `100%`
+其次, 令`.stk-table .stk-table-scroll-container` 的 `flex` 为 `1`
 
 如下
 
 ```css
-:deep(.stk-table .stk-table-main) {
-    height: 100%;
+:deep(.stk-table .stk-table-scroll-container) {
+    flex: 1;
 }
 ```
 

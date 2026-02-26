@@ -23,7 +23,13 @@ const dataSource = ref([
 </script>
 <template>
     <div class="container" :style="{ height: height + 'px' }">
-        <RangeInput v-model="height" min="0" max="600" :label="t('height')" suffix="px"></RangeInput>
+        <RangeInput
+            v-model="height"
+            min="0"
+            max="600"
+            :label="t('height')"
+            suffix="px"
+        ></RangeInput>
         <StkTable header-row-height="50" :columns="columns" :data-source="dataSource"></StkTable>
     </div>
 </template>
@@ -36,7 +42,7 @@ const dataSource = ref([
 :deep(.stk-table) {
     flex: 1;
 }
-:deep(.stk-table .stk-table-main) {
-    height: 100%;
+:deep(.stk-table .stk-table-scroll-container) {
+    flex: 1;
 }
 </style>

@@ -24,13 +24,13 @@ When virtual list is enabled, scrolling may cause column width changes, which is
 ## Flexible Row Height
 First, the height of the `<StkTable>` component must be sufficient. You can place it in a flexible layout like `flex` or `grid`, or set its height to `100%`, so that its parent element determines its height instead of being expanded by child elements.
 
-Second, set the `height` of `.stk-table .stk-table-main` to `100%`
+Second, set the `flex` of `.stk-table .stk-table-scroll-container` to `1`
 
 As follows
 
 ```css
-:deep(.stk-table .stk-table-main) {
-    height: 100%;
+:deep(.stk-table .stk-table-scroll-container) {
+    flex: 1;
 }
 ```
 
