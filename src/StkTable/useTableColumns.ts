@@ -3,16 +3,11 @@ import { PrivateRowDT, PrivateStkTableColumn, StkTableColumn } from './types';
 import { getColWidth } from './utils/constRefUtils';
 import { howDeepTheHeader } from './utils/index';
 
-type Params = {
-    virtualX: boolean;
-    isRelativeMode: Ref<boolean>;
-};
-
 /**
  * Table Columns Processing Hook
  * Handles multi-level header processing and column flattening
  */
-export function useTableColumns<DT extends Record<string, any>>({ virtualX, isRelativeMode }: Params) {
+export function useTableColumns<DT extends Record<string, any>>(virtualX: boolean, isRelativeMode: Ref<boolean>) {
     /**
      * 表头.内容是 props.columns 的引用集合
      * @eg
@@ -129,9 +124,5 @@ export function useTableColumns<DT extends Record<string, any>>({ virtualX, isRe
         tableHeadersForCalc.value = tableHeadersForCalcTemp;
     }
 
-    return {
-        tableHeaders,
-        tableHeadersForCalc,
-        dealColumns,
-    };
+    return [tableHeaders, tableHeadersForCalc, dealColumns] as const;
 }

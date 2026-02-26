@@ -2,29 +2,26 @@ import { CSSProperties, ComputedRef, Ref } from 'vue';
 import { StkTableColumn, TagType } from './types';
 import { VirtualScrollStore, VirtualScrollXStore } from './useVirtualScroll';
 
-type Options<T extends Record<string, any>> = {
-    props: any;
-    isRelativeMode: Ref<boolean>;
-    getFixedColPosition: ComputedRef<(col: StkTableColumn<T>) => number>;
-    virtualScroll: Ref<VirtualScrollStore>;
-    virtualScrollX: Ref<VirtualScrollXStore>;
-    virtualX_on: Ref<boolean>;
-    virtualX_offsetRight: Ref<number>;
-};
 /**
  * 固定列style
- * @param param0
+ * @param props
+ * @param isRelativeMode
+ * @param getFixedColPosition
+ * @param virtualScroll
+ * @param virtualScrollX
+ * @param virtualX_on
+ * @param virtualX_offsetRight
  * @returns
  */
-export function useFixedStyle<DT extends Record<string, any>>({
-    props,
-    isRelativeMode,
-    getFixedColPosition,
-    virtualScroll,
-    virtualScrollX,
-    virtualX_on,
-    virtualX_offsetRight,
-}: Options<DT>) {
+export function useFixedStyle<DT extends Record<string, any>>(
+    props: any,
+    isRelativeMode: Ref<boolean>,
+    getFixedColPosition: ComputedRef<(col: StkTableColumn<DT>) => number>,
+    virtualScroll: Ref<VirtualScrollStore>,
+    virtualScrollX: Ref<VirtualScrollXStore>,
+    virtualX_on: Ref<boolean>,
+    virtualX_offsetRight: Ref<number>
+) {
     /**
      * 固定列的style
      * @param tagType 1-th 2-td

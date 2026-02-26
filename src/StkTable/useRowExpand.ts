@@ -2,13 +2,8 @@ import { ShallowRef } from 'vue';
 import { EXPANDED_ROW_KEY_PREFIX } from './const';
 import { PrivateRowDT, RowKeyGen, StkTableColumn, UniqKey } from './types';
 type DT = PrivateRowDT;
-type Option<DT extends Record<string, any>> = {
-    rowKeyGen: RowKeyGen;
-    dataSourceCopy: ShallowRef<DT[]>;
-    emits: any;
-};
 
-export function useRowExpand({ dataSourceCopy, rowKeyGen, emits }: Option<DT>) {
+export function useRowExpand(emits: any, dataSourceCopy: ShallowRef<DT[]>, rowKeyGen: RowKeyGen) {
     const expandedKey = '__EXP__';
 
     function isExpanded(row: DT, col?: StkTableColumn<DT>) {
@@ -81,8 +76,5 @@ export function useRowExpand({ dataSourceCopy, rowKeyGen, emits }: Option<DT>) {
         }
     }
 
-    return {
-        toggleExpandRow,
-        setRowExpand,
-    };
+    return [toggleExpandRow, setRowExpand] as const;
 }

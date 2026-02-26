@@ -2,12 +2,6 @@ import { computed, ShallowRef } from 'vue';
 import { DragRowConfig } from './types';
 import { getClosestTr } from './utils';
 
-type Params = {
-    props: any;
-    emits: any;
-    dataSourceCopy: ShallowRef<any[]>;
-};
-
 const TR_DRAGGING_CLASS = 'tr-dragging';
 const TR_DRAG_OVER_CLASS = 'tr-dragging-over';
 const DATA_TRANSFER_FORMAT = 'text/plain';
@@ -16,7 +10,7 @@ const DATA_TRANSFER_FORMAT = 'text/plain';
  * 拖拽行
  * TODO: 不在虚拟滚动的情况下，从上面拖拽到下面，跨页的时候，滚动条会自适应位置。没有顶上去
  */
-export function useTrDrag({ props, emits, dataSourceCopy }: Params) {
+export function useTrDrag(props: any, emits: any, dataSourceCopy: ShallowRef<any[]>) {
     let trDragFlag = false;
 
     const dragRowConfig = computed<DragRowConfig>(() => {
@@ -102,12 +96,5 @@ export function useTrDrag({ props, emits, dataSourceCopy }: Params) {
         emits('row-order-change', sourceIndex, endIndex);
     }
 
-    return {
-        dragRowConfig,
-        onTrDragStart,
-        onTrDragEnter,
-        onTrDragOver,
-        onTrDrop,
-        onTrDragEnd,
-    };
+    return [onTrDragStart, onTrDragEnter, onTrDragOver, onTrDrop, onTrDragEnd] as const;
 }

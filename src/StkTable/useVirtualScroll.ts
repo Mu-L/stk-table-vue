@@ -1,20 +1,8 @@
 import { Ref, ShallowRef, computed, ref } from 'vue';
 import { DEFAULT_ROW_HEIGHT, DEFAULT_TABLE_HEIGHT, DEFAULT_TABLE_WIDTH } from './const';
-import { AutoRowHeightConfig, PrivateRowDT, PrivateStkTableColumn, RowKeyGen, StkTableColumn, UniqKey } from './types';
-import { getCalculatedColWidth } from './utils/constRefUtils';
+import { AutoRowHeightConfig, PrivateRowDT, PrivateStkTableColumn, RowKeyGen, UniqKey } from './types';
 import { ScrollbarOptions } from './useScrollbar';
-
-type Option<DT extends Record<string, any>> = {
-    props: any;
-    tableContainerRef: Ref<HTMLElement | undefined>;
-    trRef: Ref<HTMLTableRowElement[] | undefined>;
-    dataSourceCopy: ShallowRef<PrivateRowDT[]>;
-    tableHeaderLast: ShallowRef<PrivateStkTableColumn<PrivateRowDT>[]>;
-    tableHeaders: ShallowRef<PrivateStkTableColumn<PrivateRowDT>[][]>;
-    rowKeyGen: RowKeyGen;
-    maxRowSpan: Map<UniqKey, number>;
-    scrollbarOptions: Ref<Required<ScrollbarOptions>>;
-};
+import { getCalculatedColWidth } from './utils/constRefUtils';
 
 /** 暂存纵向虚拟滚动的数据 */
 export type VirtualScrollStore = {
@@ -57,20 +45,19 @@ const VUE2_SCROLL_TIMEOUT_MS = 200;
 
 /**
  * virtual scroll
- * @param param0
  * @returns
  */
-export function useVirtualScroll<DT extends Record<string, any>>({
-    props,
-    tableContainerRef,
-    trRef,
-    dataSourceCopy,
-    tableHeaderLast,
-    tableHeaders,
-    rowKeyGen,
-    maxRowSpan,
-    scrollbarOptions,
-}: Option<DT>) {
+export function useVirtualScroll<DT extends Record<string, any>>(
+    props: any,
+    tableContainerRef: Ref<HTMLElement | undefined>,
+    trRef: Ref<HTMLTableRowElement[] | undefined>,
+    dataSourceCopy: ShallowRef<PrivateRowDT[]>,
+    tableHeaderLast: ShallowRef<PrivateStkTableColumn<PrivateRowDT>[]>,
+    tableHeaders: ShallowRef<PrivateStkTableColumn<PrivateRowDT>[][]>,
+    rowKeyGen: RowKeyGen,
+    maxRowSpan: Map<UniqKey, number>,
+    scrollbarOptions: Ref<Required<ScrollbarOptions>>,
+) {
     const tableHeaderHeight = computed(() => props.headerRowHeight * tableHeaders.value.length);
 
     const virtualScroll = ref<VirtualScrollStore>({
@@ -498,7 +485,7 @@ export function useVirtualScroll<DT extends Record<string, any>>({
         }
     }
 
-    return {
+    return [
         virtualScroll,
         virtualScrollX,
         virtual_on,
@@ -515,5 +502,5 @@ export function useVirtualScroll<DT extends Record<string, any>>({
         updateVirtualScrollX,
         setAutoHeight,
         clearAllAutoHeight,
-    };
+    ] as const;
 }

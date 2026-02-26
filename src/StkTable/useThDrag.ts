@@ -2,16 +2,11 @@ import { computed } from 'vue';
 import { ColKeyGen, StkTableColumn } from './types';
 import { isEmptyValue } from './utils';
 
-type Params = {
-    props: any;
-    emits: any;
-    colKeyGen: ColKeyGen;
-};
 /**
  * 列顺序拖动
  * @returns
  */
-export function useThDrag({ props, emits, colKeyGen }: Params) {
+export function useThDrag(props: any, emits: any, colKeyGen: ColKeyGen) {
     const findParentTH = (e: DragEvent) => (e.target as HTMLElement).closest('th');
 
     const dragConfig = computed(() => {
@@ -92,11 +87,10 @@ export function useThDrag({ props, emits, colKeyGen }: Params) {
         emits('col-order-change', dragStartKey, dragEndKey);
     }
 
-    return {
-        onThDragStart,
-        onThDragOver,
-        onThDrop,
-        /** 是否可拖拽 */
-        isHeaderDraggable: (col: StkTableColumn<any>) => dragConfig.value.draggable && !dragConfig.value.disabled(col),
-    };
+    /** 是否可拖拽 */
+    function isHeaderDraggable(col: StkTableColumn<any>) {
+        return dragConfig.value.draggable && !dragConfig.value.disabled(col);
+    }
+
+    return [onThDragStart, onThDragOver, onThDrop, isHeaderDraggable] as const;
 }

@@ -2,17 +2,15 @@ import { ComputedRef, ShallowRef, computed } from 'vue';
 import { StkTableColumn, UniqKey } from './types';
 import { getCalculatedColWidth } from './utils/constRefUtils';
 
-type Params<T extends Record<string, any>> = {
-    colKeyGen: ComputedRef<(col: StkTableColumn<T>) => UniqKey>;
-    tableHeadersForCalc: ShallowRef<StkTableColumn<T>[][]>;
-};
-
 /**
  * 固定列fixed左侧或者右侧的距离
  * - col.fixed = left 则得到距离左侧的距离
  * - col.fixed = right 则得到距离右侧的距离
  */
-export function useGetFixedColPosition<DT extends Record<string, any>>({ tableHeadersForCalc, colKeyGen }: Params<DT>) {
+export function useGetFixedColPosition<DT extends Record<string, any>>(
+    tableHeadersForCalc: ShallowRef<StkTableColumn<DT>[][]>,
+    colKeyGen: ComputedRef<(col: StkTableColumn<DT>) => UniqKey>
+) {
     /** 固定列fixed左侧或者右侧的距离 */
     const getFixedColPosition = computed(() => {
         /** colKey 作为唯一标识 */

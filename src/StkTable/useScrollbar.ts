@@ -14,22 +14,20 @@ export type ScrollbarOptions = {
     minHeight?: number;
 };
 
-type Params = {
-    props: any;
-    containerRef: Ref<HTMLDivElement | undefined>;
-    virtualScroll: Ref<VirtualScrollStore>;
-    virtualScrollX: Ref<VirtualScrollXStore>;
-    updateVirtualScrollY: (sTop?: number) => void;
-    scrollbarOptions: Ref<Required<ScrollbarOptions>>;
-};
-
 /**
  * 自定义滚动条hooks
  * @param containerRef 滚动容器的ref
  * @param options 滚动条配置选项
  * @returns 滚动条相关状态和方法
  */
-export function useScrollbar({ props, containerRef, virtualScroll, virtualScrollX, updateVirtualScrollY, scrollbarOptions }: Params) {
+export function useScrollbar(
+    props: any,
+    containerRef: Ref<HTMLDivElement | undefined>,
+    virtualScroll: Ref<VirtualScrollStore>,
+    virtualScrollX: Ref<VirtualScrollXStore>,
+    updateVirtualScrollY: (sTop?: number) => void,
+    scrollbarOptions: Ref<Required<ScrollbarOptions>>
+) {
     const showScrollbar = ref({ x: false, y: false });
 
     const scrollbar = ref({ h: 0, w: 0, t: 0, l: 0 });
@@ -182,11 +180,5 @@ export function useScrollbar({ props, containerRef, virtualScroll, virtualScroll
         });
     }
 
-    return {
-        scrollbar,
-        showScrollbar,
-        onVerticalScrollbarMouseDown,
-        onHorizontalScrollbarMouseDown,
-        updateCustomScrollbar,
-    };
+    return [scrollbar, showScrollbar, onVerticalScrollbarMouseDown, onHorizontalScrollbarMouseDown, updateCustomScrollbar] as const;
 }

@@ -15,26 +15,16 @@ type ColResizeState<DT extends Record<string, any>> = {
     revertMoveX: boolean;
 };
 
-type Params<DT extends Record<string, any>> = {
-    props: any;
-    emits: any;
-    tableContainerRef: Ref<HTMLElement | undefined>;
-    tableHeaderLast: ShallowRef<StkTableColumn<DT>[]>;
-    colResizeIndicatorRef: Ref<HTMLElement | undefined>;
-    colKeyGen: ComputedRef<(p: any) => UniqKey>;
-    fixedCols: Ref<StkTableColumn<DT>[]>;
-};
-
 /** 列宽拖动 */
-export function useColResize<DT extends Record<string, any>>({
-    tableContainerRef,
-    tableHeaderLast,
-    colResizeIndicatorRef,
-    props,
-    emits,
-    colKeyGen,
-    fixedCols,
-}: Params<DT>) {
+export function useColResize<DT extends Record<string, any>>(
+    props: any,
+    emits: any,
+    tableContainerRef: Ref<HTMLElement | undefined>,
+    tableHeaderLast: ShallowRef<StkTableColumn<DT>[]>,
+    colResizeIndicatorRef: Ref<HTMLElement | undefined>,
+    colKeyGen: ComputedRef<(p: any) => UniqKey>,
+    fixedCols: Ref<StkTableColumn<DT>[]>,
+) {
     /** 列宽是否在拖动 */
     const isColResizing = ref(false);
 
@@ -206,9 +196,5 @@ export function useColResize<DT extends Record<string, any>>({
         return column;
     }
 
-    return {
-        colResizeOn,
-        isColResizing,
-        onThResizeMouseDown,
-    };
+    return [colResizeOn, isColResizing, onThResizeMouseDown] as const;
 }

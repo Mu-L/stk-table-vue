@@ -2,13 +2,7 @@ import { Ref, computed } from 'vue';
 import { HIGHLIGHT_CELL_CLASS, HIGHLIGHT_COLOR, HIGHLIGHT_DURATION, HIGHLIGHT_ROW_CLASS } from './const';
 import { HighlightConfig, UniqKey } from './types';
 import { HighlightDimCellOption, HighlightDimRowOption } from './types/highlightDimOptions';
-import { pureCellKeyGen } from './utils';
 
-type Params = {
-    props: any;
-    stkTableId: string;
-    tableContainerRef: Ref<HTMLDivElement | undefined>;
-};
 /** 存放高亮行信息 */
 type HighlightDimRowStore = {
     /** 动画开始时间戳 */
@@ -24,7 +18,7 @@ type HighlightDimRowStore = {
 /**
  * 高亮单元格，行
  */
-export function useHighlight({ props, stkTableId, tableContainerRef }: Params) {
+export function useHighlight(props: any, stkTableId: string, tableContainerRef: Ref<HTMLDivElement | undefined>) {
     const config: HighlightConfig = props.highlightConfig;
 
     /** 高亮颜色 */
@@ -249,9 +243,5 @@ export function useHighlight({ props, stkTableId, tableContainerRef }: Params) {
         }
     }
 
-    return {
-        highlightSteps,
-        setHighlightDimRow,
-        setHighlightDimCell,
-    };
+    return [highlightSteps, setHighlightDimRow, setHighlightDimCell] as const;
 }

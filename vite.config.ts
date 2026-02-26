@@ -3,7 +3,7 @@ import vue from '@vitejs/plugin-vue';
 import path from 'node:path';
 import dts from 'vite-plugin-dts';
 import pkg from './package.json';
-import banner from 'vite-plugin-banner'
+import banner from 'vite-plugin-banner';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -48,7 +48,7 @@ export default defineConfig({
                 ` * author: ${pkg.author}`,
                 ` * homepage: ${pkg.homepage}`,
                 ` * license: ${pkg.license}`,
-                ' */'
+                ' */',
             ].join('\n'),
         ),
         ...(process.env.NODE_ENV === 'production' ? [dts()] : []),

@@ -2,14 +2,8 @@ import { ShallowRef } from 'vue';
 import { PrivateRowDT, RowKeyGen, TreeConfig, UniqKey } from './types';
 
 type DT = PrivateRowDT & { children?: DT[] };
-type Option<DT extends Record<string, any>> = {
-    props: any;
-    rowKeyGen: RowKeyGen;
-    dataSourceCopy: ShallowRef<DT[]>;
-    emits: any;
-};
 
-export function useTree({ props, dataSourceCopy, rowKeyGen, emits }: Option<DT>) {
+export function useTree(props: any, dataSourceCopy: ShallowRef<DT[]>, rowKeyGen: RowKeyGen, emits: any) {
     const { defaultExpandAll, defaultExpandKeys, defaultExpandLevel }: TreeConfig = props.treeConfig;
     /** It used to check if it is first load. To execute defaultExpandXXX */
     let isFirstLoad = true;
@@ -85,7 +79,7 @@ export function useTree({ props, dataSourceCopy, rowKeyGen, emits }: Option<DT>)
 
     function recursionFlat(data: DT[] | undefined, level: number, parent?: DT): DT[] {
         if (!data) return [];
-        let result: DT[] = []
+        let result: DT[] = [];
         for (let i = 0; i < data.length; i++) {
             const item = data[i];
             result.push(item);
@@ -110,7 +104,7 @@ export function useTree({ props, dataSourceCopy, rowKeyGen, emits }: Option<DT>)
             }
         }
         return result;
-    };
+    }
 
     /**
      * 根据保存的展开状态，深度遍历，展平树形数据。
@@ -153,9 +147,5 @@ export function useTree({ props, dataSourceCopy, rowKeyGen, emits }: Option<DT>)
         return deleteCount;
     }
 
-    return {
-        toggleTreeNode,
-        setTreeExpand,
-        flatTreeData,
-    };
+    return [toggleTreeNode, setTreeExpand, flatTreeData] as const;
 }

@@ -1,11 +1,6 @@
 import { computed, customRef, onMounted, onUnmounted, Ref, watch } from 'vue';
 
-type Params = {
-    props: any;
-    tableContainerRef: Ref<HTMLElement | undefined>;
-};
-
-export function useScrollRowByRow({ props, tableContainerRef }: Params) {
+export function useScrollRowByRow(props: any, tableContainerRef: Ref<HTMLElement | undefined>) {
     // let isMouseDown = false;
     let isAddListeners = false;
     /** record the last scroll bar position */
@@ -15,7 +10,7 @@ export function useScrollRowByRow({ props, tableContainerRef }: Params) {
     const isDragScroll = customRef((track, trigger) => {
         let value = false;
         let debounceTimer = 0;
-        
+
         return {
             get() {
                 track();
@@ -31,7 +26,7 @@ export function useScrollRowByRow({ props, tableContainerRef }: Params) {
                         value = newValue;
                         trigger();
                         debounceTimer = 0;
-                    }, 300); 
+                    }, 300);
                 } else {
                     if (debounceTimer) {
                         window.clearTimeout(debounceTimer);
@@ -40,8 +35,8 @@ export function useScrollRowByRow({ props, tableContainerRef }: Params) {
                     value = newValue;
                     trigger();
                 }
-            }
-        }
+            },
+        };
     });
     const onlyDragScroll = computed(() => props.scrollRowByRow === 'scrollbar');
 
@@ -75,7 +70,6 @@ export function useScrollRowByRow({ props, tableContainerRef }: Params) {
         if (!container) return;
         container.addEventListener('mousedown', handleMouseDown);
         container.addEventListener('mouseup', handleMouseUp);
-        // container.addEventListener('scroll', handleScroll);
         isAddListeners = true;
     }
 
@@ -84,31 +78,19 @@ export function useScrollRowByRow({ props, tableContainerRef }: Params) {
         if (!container) return;
         container.removeEventListener('mousedown', handleMouseDown);
         container.removeEventListener('mouseup', handleMouseUp);
-        // container.removeEventListener('scroll', handleScroll);
         isAddListeners = false;
     }
 
     function handleMouseDown(e: Event) {
-        // console.log('mousedown target:', e.target)
         const el = e.target as HTMLElement;
-        if(el.classList.contains('stk-table')){
+        if (el.classList.contains('stk-table')) {
             isDragScroll.value = true;
         }
-        // isMouseDown = true;
-        // lastScrollTop = (e.target as HTMLElement).scrollTop;
     }
 
     function handleMouseUp() {
-        // isMouseDown = false;
         isDragScroll.value = false;
-        // lastScrollTop = 0;
     }
 
-    // function handleScroll(e: Event) {
-    //     const scrollTop = (e.target as HTMLElement).scrollTop;
-    //     // if scrollTop === lastScrollTop means horizontal scroll
-    //     if (!isMouseDown || scrollTop === lastScrollTop) return;
-    //     isDragScroll.value = true;
-    // }
-    return { isSRBRActive, isDragScroll };
+    return [isSRBRActive] as const;
 }

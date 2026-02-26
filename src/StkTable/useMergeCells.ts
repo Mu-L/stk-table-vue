@@ -1,14 +1,13 @@
 import { Ref, ref, ShallowRef, watch } from 'vue';
 import { ColKeyGen, MergeCellsParam, PrivateStkTableColumn, RowActiveOption, RowKeyGen, UniqKey } from './types';
 import { pureCellKeyGen } from './utils';
-type Options = {
-    rowActiveProp: Ref<RowActiveOption<any>>;
-    tableHeaderLast: ShallowRef<PrivateStkTableColumn<any>[]>;
-    rowKeyGen: RowKeyGen;
-    colKeyGen: ColKeyGen;
-    virtual_dataSourcePart: ShallowRef<any[]>;
-};
-export function useMergeCells({ rowActiveProp, tableHeaderLast, rowKeyGen, colKeyGen, virtual_dataSourcePart }: Options) {
+export function useMergeCells(
+    rowActiveProp: Ref<RowActiveOption<any>>,
+    tableHeaderLast: ShallowRef<PrivateStkTableColumn<any>[]>,
+    rowKeyGen: RowKeyGen,
+    colKeyGen: ColKeyGen,
+    virtual_dataSourcePart: ShallowRef<any[]>
+) {
     /**
      * which cell need be hidden
      * - key: rowKey
@@ -128,12 +127,5 @@ export function useMergeCells({ rowActiveProp, tableHeaderLast, rowKeyGen, colKe
         activeMergedCells.value = (rowKey !== void 0 && hoverRowMap.value[rowKey]) || new Set(hoverMergedCells.value);
     }
 
-    return {
-        hiddenCellMap,
-        mergeCellsWrapper,
-        hoverMergedCells,
-        updateHoverMergedCells,
-        activeMergedCells,
-        updateActiveMergedCells,
-    };
+    return [hiddenCellMap, mergeCellsWrapper, hoverMergedCells, updateHoverMergedCells, activeMergedCells, updateActiveMergedCells] as const;
 }

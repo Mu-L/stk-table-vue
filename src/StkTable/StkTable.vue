@@ -682,10 +682,7 @@ let sortOrderIndex = ref(0);
 /** 排序切换顺序 */
 const sortSwitchOrder: Order[] = [null, 'desc', 'asc'];
 
-const { tableHeaders, tableHeadersForCalc, dealColumns } = useTableColumns<DT>({
-    virtualX: props.virtualX,
-    isRelativeMode,
-});
+const [tableHeaders, tableHeadersForCalc, dealColumns] = useTableColumns<DT>(props.virtualX, isRelativeMode);
 
 /** 最后一行的tableHeaders.内容是 props.columns 的引用集合  */
 const tableHeaderLast = computed(() => tableHeadersForCalc.value.slice(-1)[0] || []);
@@ -762,15 +759,15 @@ const scrollbarOptions = computed(() => ({
 
 const rowKeyGenCache = new WeakMap();
 
-const { isSRBRActive } = useScrollRowByRow({ props, tableContainerRef });
+const [isSRBRActive] = useScrollRowByRow(props, tableContainerRef);
 
-const { onThDragStart, onThDragOver, onThDrop, isHeaderDraggable } = useThDrag({ props, emits, colKeyGen });
+const [onThDragStart, onThDragOver, onThDrop, isHeaderDraggable] = useThDrag(props, emits, colKeyGen);
 
-const { onTrDragStart, onTrDrop, onTrDragOver, onTrDragEnd, onTrDragEnter } = useTrDrag({ props, emits, dataSourceCopy });
+const [onTrDragStart, onTrDragEnter, onTrDragOver, onTrDrop, onTrDragEnd] = useTrDrag(props, emits, dataSourceCopy);
 
-const { maxRowSpan, updateMaxRowSpan } = useMaxRowSpan({ props, tableHeaderLast, rowKeyGen, dataSourceCopy });
+const [maxRowSpan, updateMaxRowSpan] = useMaxRowSpan(props, tableHeaderLast, rowKeyGen, dataSourceCopy);
 
-const {
+const [
     virtualScroll,
     virtualScrollX,
     virtual_on,
@@ -787,82 +784,66 @@ const {
     updateVirtualScrollX,
     setAutoHeight,
     clearAllAutoHeight,
-} = useVirtualScroll({ tableContainerRef, trRef, props, dataSourceCopy, tableHeaderLast, tableHeaders, rowKeyGen, maxRowSpan, scrollbarOptions });
+] = useVirtualScroll(props, tableContainerRef, trRef, dataSourceCopy, tableHeaderLast, tableHeaders, rowKeyGen, maxRowSpan, scrollbarOptions);
 
 /** requestAnimationFrame throttled version of updateVirtualScrollY for smoother wheel scrolling */
 const rafUpdateVirtualScrollYForWheel = rafThrottle((scrollTop: number) => {
     updateVirtualScrollY(scrollTop);
 });
 
-const { scrollbar, showScrollbar, onVerticalScrollbarMouseDown, onHorizontalScrollbarMouseDown, updateCustomScrollbar } = useScrollbar({
+const [scrollbar, showScrollbar, onVerticalScrollbarMouseDown, onHorizontalScrollbarMouseDown, updateCustomScrollbar] = useScrollbar(
     props,
-    containerRef: tableContainerRef,
+    tableContainerRef,
     virtualScroll,
     virtualScrollX,
     updateVirtualScrollY,
     scrollbarOptions,
-});
+);
 
-const {
-    hiddenCellMap, //
-    mergeCellsWrapper,
-    hoverMergedCells,
-    updateHoverMergedCells,
-    activeMergedCells,
-    updateActiveMergedCells,
-} = useMergeCells({ rowActiveProp, tableHeaderLast, rowKeyGen, colKeyGen, virtual_dataSourcePart });
+const [hiddenCellMap, mergeCellsWrapper, hoverMergedCells, updateHoverMergedCells, activeMergedCells, updateActiveMergedCells] = useMergeCells(
+    rowActiveProp,
+    tableHeaderLast,
+    rowKeyGen,
+    colKeyGen,
+    virtual_dataSourcePart,
+);
 
-const getFixedColPosition = useGetFixedColPosition({ colKeyGen, tableHeadersForCalc });
+const getFixedColPosition = useGetFixedColPosition(tableHeadersForCalc, colKeyGen);
 
-const getFixedStyle = useFixedStyle<DT>({
-    props,
-    isRelativeMode,
-    getFixedColPosition,
-    virtualScroll,
-    virtualScrollX,
-    virtualX_on,
-    virtualX_offsetRight,
-});
+const getFixedStyle = useFixedStyle<DT>(props, isRelativeMode, getFixedColPosition, virtualScroll, virtualScrollX, virtualX_on, virtualX_offsetRight);
 
-const { highlightSteps, setHighlightDimCell, setHighlightDimRow } = useHighlight({ props, stkTableId, tableContainerRef });
+const [highlightSteps, setHighlightDimRow, setHighlightDimCell] = useHighlight(props, stkTableId, tableContainerRef);
 
 if (props.autoResize) {
-    useAutoResize({ tableContainerRef, initVirtualScroll, props, debounceMs: 200 });
+    useAutoResize(tableContainerRef, initVirtualScroll, props, 200);
 }
 
 /** 键盘箭头滚动 */
-useKeyboardArrowScroll(tableContainerRef, {
-    props,
-    scrollTo,
-    virtualScroll,
-    virtualScrollX,
-    tableHeaders,
-    virtual_on,
-});
+useKeyboardArrowScroll(tableContainerRef, props, scrollTo, virtualScroll, virtualScrollX, tableHeaders, virtual_on);
 
 /** 固定列处理 */
-const { fixedCols, fixedColClassMap, updateFixedShadow } = useFixedCol({
+const [fixedCols, fixedColClassMap, updateFixedShadow] = useFixedCol(
     props,
     colKeyGen,
     getFixedColPosition,
-    tableContainerRef,
     tableHeaders,
     tableHeadersForCalc,
-});
+    tableContainerRef,
+);
 
-const { isColResizing, onThResizeMouseDown, colResizeOn } = useColResize({
+const [colResizeOn, isColResizing, onThResizeMouseDown] = useColResize(
     props,
     emits,
-    colKeyGen,
-    colResizeIndicatorRef,
     tableContainerRef,
     tableHeaderLast,
+    colResizeIndicatorRef,
+    colKeyGen,
     fixedCols,
-});
+);
 
-const { toggleExpandRow, setRowExpand } = useRowExpand({ dataSourceCopy, rowKeyGen, emits });
+const [toggleExpandRow, setRowExpand] = useRowExpand(emits, dataSourceCopy, rowKeyGen);
 
-const { toggleTreeNode, setTreeExpand, flatTreeData } = useTree({ props, dataSourceCopy, rowKeyGen, emits });
+const [toggleTreeNode, setTreeExpand, flatTreeData] = useTree(props, dataSourceCopy, rowKeyGen, emits);
 
 const {
     isSelecting: isAreaSelecting,

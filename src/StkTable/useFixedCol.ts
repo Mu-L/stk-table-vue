@@ -3,27 +3,18 @@ import { StkTableColumn, UniqKey } from './types';
 import { VirtualScrollXStore } from './useVirtualScroll';
 import { getCalculatedColWidth } from './utils/constRefUtils';
 
-type Params<T extends Record<string, any>> = {
-    props: any;
-    colKeyGen: ComputedRef<(col: StkTableColumn<T>) => UniqKey>;
-    getFixedColPosition: ComputedRef<(col: StkTableColumn<T>) => number>;
-    tableHeaders: ShallowRef<StkTableColumn<T>[][]>;
-    tableHeadersForCalc: ShallowRef<StkTableColumn<T>[][]>;
-    tableContainerRef: Ref<HTMLDivElement | undefined>;
-};
-
 /**
  * 固定列处理
  * @returns
  */
-export function useFixedCol<DT extends Record<string, any>>({
-    props,
-    colKeyGen,
-    getFixedColPosition,
-    tableHeaders,
-    tableHeadersForCalc,
-    tableContainerRef,
-}: Params<DT>) {
+export function useFixedCol<DT extends Record<string, any>>(
+    props: any,
+    colKeyGen: ComputedRef<(col: StkTableColumn<DT>) => UniqKey>,
+    getFixedColPosition: ComputedRef<(col: StkTableColumn<DT>) => number>,
+    tableHeaders: ShallowRef<StkTableColumn<DT>[][]>,
+    tableHeadersForCalc: ShallowRef<StkTableColumn<DT>[][]>,
+    tableContainerRef: Ref<HTMLDivElement | undefined>,
+) {
     /** 保存需要出现阴影的列 */
     const fixedShadowCols = shallowRef<StkTableColumn<DT>[]>([]);
 
@@ -38,7 +29,7 @@ export function useFixedCol<DT extends Record<string, any>>({
         const colKeyFn = colKeyGen.value;
         const fixedColShadow = props.fixedColShadow;
         const headers = tableHeaders.value;
-        
+
         for (let i = 0, len = headers.length; i < len; i++) {
             const cols = headers[i];
             for (let j = 0, colLen = cols.length; j < colLen; j++) {
@@ -46,7 +37,7 @@ export function useFixedCol<DT extends Record<string, any>>({
                 const fixed = col.fixed;
                 const showShadow = fixed && fixedColShadow && fixedShadowColsValue.includes(col);
                 const classList = [];
-                
+
                 if (fixedColsValue.includes(col)) {
                     // 表示该列正在被固定
                     classList.push('fixed-cell--active');
@@ -144,12 +135,5 @@ export function useFixedCol<DT extends Record<string, any>>({
         fixedCols.value = fixedColsTemp;
     }
 
-    return {
-        /** 正在被固定的列 */
-        fixedCols,
-        /** 固定列class */
-        fixedColClassMap,
-        /** 滚动条变化时，更新需要展示阴影的列 */
-        updateFixedShadow,
-    };
+    return [fixedCols, fixedColClassMap, updateFixedShadow] as const;
 }

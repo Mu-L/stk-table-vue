@@ -1,24 +1,22 @@
-import { ShallowRef } from "vue";
-import { PrivateStkTableColumn, RowKeyGen, UniqKey } from "./types";
+import { ShallowRef } from 'vue';
+import { PrivateStkTableColumn, RowKeyGen, UniqKey } from './types';
 
-type Options = {
-    props:any,
-    tableHeaderLast: ShallowRef<PrivateStkTableColumn<any>[]>;
-    rowKeyGen: RowKeyGen;
-    dataSourceCopy: ShallowRef<any[]>;
-}
-
-export function useMaxRowSpan({ props, tableHeaderLast, rowKeyGen, dataSourceCopy }: Options) {
+export function useMaxRowSpan(
+    props: any,
+    tableHeaderLast: ShallowRef<PrivateStkTableColumn<any>[]>,
+    rowKeyGen: RowKeyGen,
+    dataSourceCopy: ShallowRef<any[]>,
+) {
     /** max rowspan of each row */
     const maxRowSpan = new Map<UniqKey, number>();
 
-    /** 
-     * Use dataSourceCopy and tableHeaderLast to calculate maxRowSpan 
+    /**
+     * Use dataSourceCopy and tableHeaderLast to calculate maxRowSpan
      * @link {maxRowSpan}
      */
     function updateMaxRowSpan() {
-        if(!props.virtual) {
-            if(maxRowSpan.size) maxRowSpan.clear();
+        if (!props.virtual) {
+            if (maxRowSpan.size) maxRowSpan.clear();
             return;
         }
         maxRowSpan.clear();
@@ -48,9 +46,5 @@ export function useMaxRowSpan({ props, tableHeaderLast, rowKeyGen, dataSourceCop
             }
         }
     }
-
-    return {
-        maxRowSpan,
-        updateMaxRowSpan
-    }
+    return [maxRowSpan, updateMaxRowSpan] as const;
 }
