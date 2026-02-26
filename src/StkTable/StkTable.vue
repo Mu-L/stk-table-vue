@@ -236,6 +236,7 @@ import {
     DEFAULT_SORT_CONFIG,
     IS_LEGACY_MODE,
 } from './const';
+import { useAreaSelectionFnName } from './features';
 import { ON_DEMAND_FEATURE } from './registerFeature';
 import {
     AreaSelectionConfig,
@@ -870,7 +871,7 @@ const {
     get: getSelectedArea,
     clear: clearSelectedArea,
     copy: copySelectedArea,
-} = ON_DEMAND_FEATURE.useAreaSelection(
+} = ON_DEMAND_FEATURE[useAreaSelectionFnName](
     props,
     emits,
     tableContainerRef,

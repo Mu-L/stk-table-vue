@@ -645,3 +645,4 @@ export function useAreaSelection<DT extends Record<string, any>>(
         onMD: onSelectionMouseDown,
     };
 }
+export const useAreaSelectionFnName = useAreaSelection.name;
