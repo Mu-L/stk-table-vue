@@ -12,49 +12,34 @@ export type ScrollbarOptions = {
     /** min scroll-x height */
     minHeight?: number;
 };
-type Params = {
-    props: any;
-    containerRef: Ref<HTMLDivElement | undefined>;
-    virtualScroll: Ref<VirtualScrollStore>;
-    virtualScrollX: Ref<VirtualScrollXStore>;
-    updateVirtualScrollY: (sTop?: number) => void;
-    scrollbarOptions: Ref<Required<ScrollbarOptions>>;
-};
 /**
  * 自定义滚动条hooks
  * @param containerRef 滚动容器的ref
  * @param options 滚动条配置选项
  * @returns 滚动条相关状态和方法
  */
-export declare function useScrollbar({ props, containerRef, virtualScroll, virtualScrollX, updateVirtualScrollY, scrollbarOptions }: Params): {
-    scrollbar: Ref<{
-        h: number;
-        w: number;
-        t: number;
-        l: number;
-    }, {
-        h: number;
-        w: number;
-        t: number;
-        l: number;
-    } | {
-        h: number;
-        w: number;
-        t: number;
-        l: number;
-    }>;
-    showScrollbar: Ref<{
-        x: boolean;
-        y: boolean;
-    }, {
-        x: boolean;
-        y: boolean;
-    } | {
-        x: boolean;
-        y: boolean;
-    }>;
-    onVerticalScrollbarMouseDown: (e: MouseEvent | TouchEvent) => void;
-    onHorizontalScrollbarMouseDown: (e: MouseEvent | TouchEvent) => void;
-    updateCustomScrollbar: () => void;
-};
-export {};
+export declare function useScrollbar(props: any, containerRef: Ref<HTMLDivElement | undefined>, virtualScroll: Ref<VirtualScrollStore>, virtualScrollX: Ref<VirtualScrollXStore>, updateVirtualScrollY: (sTop?: number) => void, scrollbarOptions: Ref<Required<ScrollbarOptions>>): readonly [Ref<{
+    h: number;
+    w: number;
+    t: number;
+    l: number;
+}, {
+    h: number;
+    w: number;
+    t: number;
+    l: number;
+} | {
+    h: number;
+    w: number;
+    t: number;
+    l: number;
+}>, Ref<{
+    x: boolean;
+    y: boolean;
+}, {
+    x: boolean;
+    y: boolean;
+} | {
+    x: boolean;
+    y: boolean;
+}>, (e: MouseEvent | TouchEvent) => void, (e: MouseEvent | TouchEvent) => void, () => void];

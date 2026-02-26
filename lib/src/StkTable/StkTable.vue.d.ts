@@ -768,13 +768,13 @@ declare const __VLS_component: import('vue').DefineComponent<import('vue').Extra
     rowKey: UniqKeyProp;
     headerRowHeight: number | string | null;
     scrollbar: boolean | ScrollbarOptions;
-    virtualX: boolean;
     fixedMode: boolean;
     theme: "light" | "dark";
     rowHover: boolean;
     rowActive: boolean | RowActiveOption<DT>;
     rowCurrentRevokable: boolean;
     virtual: boolean;
+    virtualX: boolean;
     columns: StkTableColumn<DT>[];
     dataSource: DT[];
     emptyCellText: string | ((option: {

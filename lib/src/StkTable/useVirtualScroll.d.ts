@@ -2,17 +2,6 @@ import { Ref, ShallowRef } from 'vue';
 import { PrivateRowDT, PrivateStkTableColumn, RowKeyGen, UniqKey } from './types';
 import { ScrollbarOptions } from './useScrollbar';
 
-type Option<DT extends Record<string, any>> = {
-    props: any;
-    tableContainerRef: Ref<HTMLElement | undefined>;
-    trRef: Ref<HTMLTableRowElement[] | undefined>;
-    dataSourceCopy: ShallowRef<PrivateRowDT[]>;
-    tableHeaderLast: ShallowRef<PrivateStkTableColumn<PrivateRowDT>[]>;
-    tableHeaders: ShallowRef<PrivateStkTableColumn<PrivateRowDT>[][]>;
-    rowKeyGen: RowKeyGen;
-    maxRowSpan: Map<UniqKey, number>;
-    scrollbarOptions: Ref<Required<ScrollbarOptions>>;
-};
 /** 暂存纵向虚拟滚动的数据 */
 export type VirtualScrollStore = {
     /** 容器高度 */
@@ -50,59 +39,40 @@ export type VirtualScrollXStore = {
 };
 /**
  * virtual scroll
- * @param param0
  * @returns
  */
-export declare function useVirtualScroll<DT extends Record<string, any>>({ props, tableContainerRef, trRef, dataSourceCopy, tableHeaderLast, tableHeaders, rowKeyGen, maxRowSpan, scrollbarOptions, }: Option<DT>): {
-    virtualScroll: Ref<{
-        containerHeight: number;
-        pageSize: number;
-        startIndex: number;
-        endIndex: number;
-        rowHeight: number;
-        offsetTop: number;
-        scrollTop: number;
-        scrollHeight: number;
-        translateY: number;
-    }, VirtualScrollStore | {
-        containerHeight: number;
-        pageSize: number;
-        startIndex: number;
-        endIndex: number;
-        rowHeight: number;
-        offsetTop: number;
-        scrollTop: number;
-        scrollHeight: number;
-        translateY: number;
-    }>;
-    virtualScrollX: Ref<{
-        containerWidth: number;
-        scrollWidth: number;
-        startIndex: number;
-        endIndex: number;
-        offsetLeft: number;
-        scrollLeft: number;
-    }, VirtualScrollXStore | {
-        containerWidth: number;
-        scrollWidth: number;
-        startIndex: number;
-        endIndex: number;
-        offsetLeft: number;
-        scrollLeft: number;
-    }>;
-    virtual_on: import('vue').ComputedRef<any>;
-    virtual_dataSourcePart: import('vue').ComputedRef<PrivateRowDT[]>;
-    virtual_offsetBottom: import('vue').ComputedRef<number>;
-    virtualX_on: import('vue').ComputedRef<any>;
-    virtualX_columnPart: import('vue').ComputedRef<PrivateStkTableColumn<PrivateRowDT>[]>;
-    virtualX_offsetRight: import('vue').ComputedRef<number>;
-    tableHeaderHeight: import('vue').ComputedRef<number>;
-    initVirtualScroll: (height?: number) => void;
-    initVirtualScrollY: (height?: number) => void;
-    initVirtualScrollX: () => void;
-    updateVirtualScrollY: (sTop?: number) => void;
-    updateVirtualScrollX: (sLeft?: number) => void;
-    setAutoHeight: (rowKey: UniqKey, height?: number | null) => void;
-    clearAllAutoHeight: () => void;
-};
-export {};
+export declare function useVirtualScroll<DT extends Record<string, any>>(props: any, tableContainerRef: Ref<HTMLElement | undefined>, trRef: Ref<HTMLTableRowElement[] | undefined>, dataSourceCopy: ShallowRef<PrivateRowDT[]>, tableHeaderLast: ShallowRef<PrivateStkTableColumn<PrivateRowDT>[]>, tableHeaders: ShallowRef<PrivateStkTableColumn<PrivateRowDT>[][]>, rowKeyGen: RowKeyGen, maxRowSpan: Map<UniqKey, number>, scrollbarOptions: Ref<Required<ScrollbarOptions>>): readonly [Ref<{
+    containerHeight: number;
+    pageSize: number;
+    startIndex: number;
+    endIndex: number;
+    rowHeight: number;
+    offsetTop: number;
+    scrollTop: number;
+    scrollHeight: number;
+    translateY: number;
+}, VirtualScrollStore | {
+    containerHeight: number;
+    pageSize: number;
+    startIndex: number;
+    endIndex: number;
+    rowHeight: number;
+    offsetTop: number;
+    scrollTop: number;
+    scrollHeight: number;
+    translateY: number;
+}>, Ref<{
+    containerWidth: number;
+    scrollWidth: number;
+    startIndex: number;
+    endIndex: number;
+    offsetLeft: number;
+    scrollLeft: number;
+}, VirtualScrollXStore | {
+    containerWidth: number;
+    scrollWidth: number;
+    startIndex: number;
+    endIndex: number;
+    offsetLeft: number;
+    scrollLeft: number;
+}>, import('vue').ComputedRef<any>, import('vue').ComputedRef<PrivateRowDT[]>, import('vue').ComputedRef<number>, import('vue').ComputedRef<any>, import('vue').ComputedRef<PrivateStkTableColumn<PrivateRowDT>[]>, import('vue').ComputedRef<number>, import('vue').ComputedRef<number>, (height?: number) => void, (height?: number) => void, () => void, (sTop?: number) => void, (sLeft?: number) => void, (rowKey: UniqKey, height?: number | null) => void, () => void];

@@ -1,1 +1,1 @@
-export { useAreaSelection } from './useAreaSelection';
+export { useAreaSelection, useAreaSelectionFnName } from './useAreaSelection';

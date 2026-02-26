@@ -27,3 +27,4 @@ export declare function useAreaSelection<DT extends Record<string, any>>(props: 
     copy: () => string;
     onMD: (e: MouseEvent) => void;
 };
+export declare const useAreaSelectionFnName: string;

@@ -4,17 +4,7 @@ import { PrivateRowDT, RowKeyGen, UniqKey } from './types';
 type DT = PrivateRowDT & {
     children?: DT[];
 };
-type Option<DT extends Record<string, any>> = {
-    props: any;
-    rowKeyGen: RowKeyGen;
-    dataSourceCopy: ShallowRef<DT[]>;
-    emits: any;
-};
-export declare function useTree({ props, dataSourceCopy, rowKeyGen, emits }: Option<DT>): {
-    toggleTreeNode: (row: DT, col: any) => void;
-    setTreeExpand: (row: (UniqKey | DT) | (UniqKey | DT)[], option?: {
-        expand?: boolean;
-    }) => void;
-    flatTreeData: (data: DT[]) => DT[];
-};
+export declare function useTree(props: any, dataSourceCopy: ShallowRef<DT[]>, rowKeyGen: RowKeyGen, emits: any): readonly [(row: DT, col: any) => void, (row: (UniqKey | DT) | (UniqKey | DT)[], option?: {
+    expand?: boolean;
+}) => void, (data: DT[]) => DT[]];
 export {};
