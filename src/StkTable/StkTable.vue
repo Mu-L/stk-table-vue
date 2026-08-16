@@ -302,6 +302,36 @@ export default {
 
 <script setup lang="ts">
 /**
+ * StkTable 主组件（Vue 3 / Vue 2.7）
+ *
+ * 这是一个超大的核心组件文件，约 1800+ 行。理解它时请按以下「分区地图」定位：
+ *
+ * 1. 顶部（template 261 行前）
+ *    渲染结构：滚动容器 + 原生 <table>。包括 colgroup（固定模式列宽）、thead（多级表头、
+ *    sticky 固定）、tbody（虚拟滚动 tr / 空 td 定位）、tfoot（汇总行）、自定义滚动条容器。
+ *    通过 CSS 类（如 virtual / virtual-x / area-selection / theme 等）联动对应 hook 状态。
+ *
+ * 2. script setup（270 行起）
+ *    - props 定义：全部配置项，即公共 API（对应 types/index.ts 与文档 table-props.md）。
+ *    - 大量 useXxx hooks 的组装：本文件只做「装配」，具体逻辑在对应 hook 中。
+ *
+ * 3. 核心 hook 与职责（均在 src/StkTable/use*.ts）：
+ *    - useVirtualScroll     XY 轴虚拟滚动（可视区裁剪、占位 tr/th 定位、scroll 计算）
+ *    - useTableColumns      列配置归一化 / 多级表头展开为叶子列
+ *    - useFixedCol/useFixedStyle/getFixedColPosition  固定列 sticky/relative 定位
+ *    - useSorter/useTableColumns.sort  排序（本地/远端、多列）
+ *    - useColResize/useThDrag/useTrDrag  列宽调整 / 表头拖拽 / 行拖拽
+ *    - useMergeCells/useMaxRowSpan  单元格合并与最大行跨
+ *    - useRowExpand/useTree  展开行 / 树形
+ *    - useHighlight         单元格/行高亮（Web Animations API 或 css）
+ *    - useAreaSelection (features/)  区域选取（Excel 式键盘操作）
+ *    - useScrollbar/useScrollRowByRow/useWheeling  自定义滚动条 / 按行滚动 / 滚轮
+ *    - useAutoResize        容器尺寸自动适配
+ *
+ * 4. expose：对外暴露的实例方法（对应文档 expose.md），供 ref 调用。
+ *
+ * 注意：此文件与 vue2.7 兼容，props 不可抽离到独立文件（见下方注释），修改时注意不要破坏兼容性。
+ *
  * @author japlus
  */
 import { computed, nextTick, onMounted, provide, ref, shallowRef, toRaw, toRef, watch } from 'vue';
