@@ -146,7 +146,9 @@ function setTheme(t: 'light' | 'dark') {
 
 function handleClear() {
     checkedTempValueSet.clear();
-    confirm();
+    options.value.forEach(opt => (opt.selected = false));
+    onConfirmFn([]);
+    hide();
 }
 
 defineExpose({ visible, show, hide, setTheme });
