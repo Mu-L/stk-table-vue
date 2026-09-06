@@ -1,4 +1,8 @@
 
+## 1.2.4
+* Bugfix:
+  - fix: #86 mac scroll x
+
 ## 1.2.3
 * Bugfix
   - fix: fixed column class names were comma-joined instead of space-separated after the class-string optimization, causing `position: sticky` to never activate.
